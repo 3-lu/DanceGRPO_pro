@@ -23,29 +23,44 @@ from fastvideo.models.mochi_hf.pipeline_mochi import MochiPipeline
 def init_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--prompts", nargs="+", default=[])
+    # 提示文本，支持多输入
     parser.add_argument("--num_frames", type=int, default=25)
+    # 生产视频帧数，
     parser.add_argument("--height", type=int, default=480)
     parser.add_argument("--width", type=int, default=848)
+    # 视频长宽，16:9
     parser.add_argument("--num_inference_steps", type=int, default=8)
+    # 推理的步数，扩散过程默认8
     parser.add_argument("--guidance_scale", type=float, default=4.5)
+    # cfg参数，默认是4.5
     parser.add_argument("--model_path", type=str, default="data/mochi")
+    # 模型ckpt路径
     parser.add_argument("--seed", type=int, default=12345)
     parser.add_argument("--transformer_path", type=str, default=None)
+    # 自注意力模型的路径
     parser.add_argument("--scheduler_type",
                         type=str,
                         default="pcm_linear_quadratic")
+    # 噪声调度器，线性二次
     parser.add_argument("--lora_checkpoint_dir", type=str, default=None)
+    # lora微调参数ckpt路径
     parser.add_argument("--shift", type=float, default=8.0)
+    # 调度器偏移量
     parser.add_argument("--num_euler_timesteps", type=int, default=50)
+    # 欧拉求解时间步
     parser.add_argument("--linear_threshold", type=float, default=0.1)
+    # 线性调度阈值
     parser.add_argument("--linear_range", type=float, default=0.75)
+    # 线性调度范围
     parser.add_argument("--cpu_offload", action="store_true")
+    # 启用cpu内存卸载，节省gpu内存
     return parser.parse_args()
 
 
 def load_model(args):
     if args.scheduler_type == "euler":
         scheduler = FlowMatchEulerDiscreteScheduler()
+        # 导入flow matching欧拉离散调度器
     else:
         linear_quadratic = True if "linear_quadratic" in args.scheduler_type else False
         scheduler = PCMFMScheduler(
@@ -56,10 +71,12 @@ def load_model(args):
             args.linear_threshold,
             args.linear_range,
         )
+        # 使用PCMFM调度器（默认）
 
     if args.transformer_path:
         transformer = MochiTransformer3DModel.from_pretrained(
             args.transformer_path)
+        # 指定目录加载transformer
     else:
         transformer = MochiTransformer3DModel.from_pretrained(
             args.model_path, subfolder="transformer/")
@@ -67,6 +84,7 @@ def load_model(args):
     pipe = MochiPipeline.from_pretrained(args.model_path,
                                          transformer=transformer,
                                          scheduler=scheduler)
+    # 创建完整视频生成pipline
     pipe.enable_vae_tiling()
     # pipe.to(device)
     # if args.cpu_offload:

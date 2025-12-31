@@ -1,10 +1,14 @@
 import argparse
+#  解析命令行
 import os
+# 文件操作
 import tempfile
-
+# 创建临时文件目录
 import gradio as gr
+# 创建web界面
 import torch
 from diffusers import FlowMatchEulerDiscreteScheduler
+# 从diffusers库中导入FlowMatchEulerDiscreteScheduler类，这是一个用于扩散模型的调度器
 from diffusers.utils import export_to_video
 
 from fastvideo.distill.solver import PCMFMScheduler

@@ -10,12 +10,16 @@ import torch
 from diffusers import FlowMatchEulerDiscreteScheduler
 # 从diffusers库中导入FlowMatchEulerDiscreteScheduler类，这是一个用于扩散模型的调度器
 from diffusers.utils import export_to_video
-
+# 将生成的帧导出为视频。
 from fastvideo.distill.solver import PCMFMScheduler
+# 是一个用于视频生成的调度器
 from fastvideo.models.mochi_hf.modeling_mochi import MochiTransformer3DModel
+# 导入MochiTransformer3DModel类，这是一个用于视频生成的3D Transformer模型。
 from fastvideo.models.mochi_hf.pipeline_mochi import MochiPipeline
+# 视频生成pipeline
 
 
+# 视频生成baseline、web和pipeline
 def init_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--prompts", nargs="+", default=[])

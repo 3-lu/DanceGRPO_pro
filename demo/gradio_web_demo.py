@@ -108,7 +108,7 @@ def generate_video(
         seed = torch.randint(0, 1000000, (1, )).item()
 
     generator = torch.Generator(device="cuda").manual_seed(seed)
-
+# 随机数生成器
     if not use_negative_prompt:
         negative_prompt = None
 
